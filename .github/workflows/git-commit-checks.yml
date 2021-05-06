@@ -20,6 +20,9 @@ jobs:
                 # Get all branches and history
                 fetch-depth: 0
 
+          - name: Debug env variable
+            run: echo "$GITHUB_BASE_REF"
+
           - name: Check out the base repo
             uses: actions/checkout@v2
             with:
