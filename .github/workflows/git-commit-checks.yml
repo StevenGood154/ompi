@@ -14,9 +14,16 @@ jobs:
         name: Git commit checker
         runs-on: ubuntu-latest
         steps:
-          - name: Check out the code
+          - name: Check out the merged repo
             uses: actions/checkout@v2
             with:
+                # Get all branches and history
+                fetch-depth: 0
+
+          - name: Check out the base repo
+            uses: actions/checkout@v2
+            with:
+                ref: ${{ env.GITHUB_BASE_REF }}
                 # Get all branches and history
                 fetch-depth: 0
 
