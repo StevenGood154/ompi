@@ -13,15 +13,19 @@ jobs:
     ci:
         name: Git commit checker
         runs-on: ubuntu-latest
+        env:
+            MERGED: merged
+            BASE: base
         steps:
           - name: Check out the merged repo
             uses: actions/checkout@v2
             with:
                 # Get all branches and history
                 fetch-depth: 0
+                path: merged
 
-          - name: Debug env variable
-            run: echo "$GITHUB_BASE_REF"
+          - name: Debug
+            run: tree "$GITHUB_WORKSPACE/base/.github/refs 
 
           - name: Check out the base repo
             uses: actions/checkout@v2
@@ -29,6 +33,7 @@ jobs:
                 ref: master
                 # Get all branches and history
                 fetch-depth: 0
+                path: base
 
           - name: Setup Python
             uses: actions/setup-python@v2
@@ -39,6 +44,6 @@ jobs:
             run: pip install gitpython PyGithub
 
           - name: Check all git commits
-            run: $GITHUB_WORKSPACE/.github/workflows/git-commit-checks.py
+            run: $GITHUB_WORKSPACE/base/.github/workflows/git-commit-checks.py
             env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
