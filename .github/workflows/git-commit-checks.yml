@@ -25,7 +25,7 @@ jobs:
                 path: merged
 
           - name: Debug
-            run: tree "$GITHUB_WORKSPACE/base/.github/refs 
+            run: tree "$GITHUB_WORKSPACE/base/.github/refs" 
 
           - name: Check out the base repo
             uses: actions/checkout@v2
