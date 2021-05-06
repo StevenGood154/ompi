@@ -24,8 +24,6 @@ jobs:
                 fetch-depth: 0
                 path: merged
 
-          - name: Debug
-            run: tree "$GITHUB_WORKSPACE/base/.git/refs" 
 
           - name: Check out the base repo
             uses: actions/checkout@v2
@@ -34,6 +32,9 @@ jobs:
                 # Get all branches and history
                 fetch-depth: 0
                 path: base
+
+          - name: Debug
+            run: tree "$GITHUB_WORKSPACE/base/.git/refs"
 
           - name: Setup Python
             uses: actions/setup-python@v2
