@@ -192,12 +192,8 @@ def check_cherry_pick(config, repo, commit):
         try:
             c = repo.commit(match)
         except ValueError as e:
-            # These errors mean that the git library recognized the
-            # hash as a valid commit, but the GitHub Action didn't
-            # fetch the entire repo, so we don't have all the meta
-            # data about this commit.  Bottom line: it's a good hash.
-            # So -- no error here.
-            pass
+            print("contains a cherry pick message that refers to commit that has not been merged yet")
+            non_existent[match] = True
         except git.BadName as e:
             # Use a dictionary to track the non-existent hashes, just
             # on the off chance that the same non-existent hash exists
