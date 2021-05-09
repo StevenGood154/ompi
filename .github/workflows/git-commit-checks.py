@@ -186,14 +186,21 @@ def check_cherry_pick(config, repo, commit):
         return GOOD, "skipped (submodules updates)"
 
     non_existent = dict()
+    unmerged = dict()
     found_cherry_pick_line = False
     for match in prog_cp.findall(commit.message):
         found_cherry_pick_line = True
         try:
             c = repo.commit(match)
         except ValueError as e:
-            print("contains a cherry pick message that refers to commit that has not been merged yet")
-            non_existent[match] = True
+            # These errors mean that the git library recognized the
+            # hash as a valid commit, but the GitHub Action didn't
+            # fetch the entire repo, so we don't have all the meta
+            # data about this commit. This occurs because the commit
+            # only exists in a pull request on github. Therefore, we
+            # want to fail this commit until the referenced commit
+            # is merged. 
+            unmerged[match] = True
         except git.BadName as e:
             # Use a dictionary to track the non-existent hashes, just
             # on the off chance that the same non-existent hash exists
@@ -204,12 +211,24 @@ def check_cherry_pick(config, repo, commit):
 
     # Process the results for this commit
     if found_cherry_pick_line:
-        if len(non_existent) == 0:
+        if len(non_existent) == 0 and len(unmerged) == 0:
             return GOOD, None
-        else:
+        elif len(non_existent) > 0 and len(unmerged) == 0:
             str = f"contains a cherry pick message that refers to non-existent commit"
             if len(non_existent) > 1:
                 str += "s"
+            str += ": "
+            str += ", ".join(non_existent)
+            return BAD, str
+        elif len(non_existent) == 0 and len(unmerged) > 0:
+            str = f"contains a cherry pick message that refers to unmerged commit"
+            if len(non_existent) > 1:
+                str += "s"
+            str += ": "
+            str += ", ".join(non_existent)
+            return BAD, str
+        else:
+            str = f"contains a cherry pick message that refers to non-existent and unmerged commits"
             str += ": "
             str += ", ".join(non_existent)
             return BAD, str
