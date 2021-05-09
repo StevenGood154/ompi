@@ -199,7 +199,7 @@ def check_cherry_pick(config, repo, commit):
             # data about this commit. This occurs because the commit
             # only exists in a pull request on github. Therefore, we
             # want to fail this commit until the referenced commit
-            # is merged. 
+            # is merged.
             unmerged[match] = True
         except git.BadName as e:
             # Use a dictionary to track the non-existent hashes, just
@@ -225,12 +225,12 @@ def check_cherry_pick(config, repo, commit):
             if len(non_existent) > 1:
                 str += "s"
             str += ": "
-            str += ", ".join(non_existent)
+            str += ", ".join(unmerged)
             return BAD, str
         else:
             str = f"contains a cherry pick message that refers to non-existent and unmerged commits"
             str += ": "
-            str += ", ".join(non_existent)
+            str += ", ".join(non_existent + unmerged)
             return BAD, str
 
     else:
